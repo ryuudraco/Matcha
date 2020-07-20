@@ -1,0 +1,19 @@
+<div class="mb-4">
+    <div class="card" style="width: 16rem;">
+      <img src="{{ user.avatar_image }}" class="card-img-top" alt="Avatar">
+      <div class="card-body">
+        <h5 class="card-title">{{ user.username }}</h5>
+        <p class="card-text">{{ user.first_name }}</p>
+        <ul class="card-subtitle mb-2 text-muted">{{ user.interests }}</ul>
+        <p class="card">Likes: {{ user.likes }} </p>
+        <a href="/profile/{{ user.username }}" class="btn btn-primary">View Profile</a>
+        {% if user.id != USER_ID %}
+        <form method="post" id="form" action="/profile/{{user.username}}/like" >
+            <div class="float-left">
+                <button type="submit" name="register" class="btn btn-primary">{% if liked == 1 %} Unlike {% elseif liked != 1 %} Like {% endif %}</button>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+  </div>
+</div>

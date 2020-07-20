@@ -1,0 +1,42 @@
+{% extends 'layouts/master.html' %}
+
+{% block body %}
+	<form method="post" id="form" action="/register">
+		<div class="form-group">
+			<label for="username">Username</label>
+			<input type="text" class="form-control" id="username" name="username" aria-describedby="usernameHelp" placeholder="Enter Your Username">
+			<small id="usernameHelp" class="form-text text-muted">This is your unique username shown to other members.</small>
+		</div>
+		<div class="form-group">
+			<label for="password">Password</label>
+			<input type="password" class="form-control" id="password" name="password" aria-describedby="passwordHelp" placeholder="Enter Your password">
+			<small id="passwordHelp" class="form-text text-muted">Must be at least 6 characters, have an uppercase letter, lowercase letter and number.</small>
+		</div>
+		<div class="form-group">
+			<label for="password_confirm">Confirm Password</label>
+			<input type="password" class="form-control" id="password_confirm" name="password_confirm" placeholder="Confirm Your password">
+		</div>
+		<div class="form-group">
+			<label for="email">Email</label>
+			<input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter Your email">
+			<small id="emailHelp" class="form-text text-muted">This is to keep you informed of updates and notifications.</small>
+		</div>
+		<div class="form-group">
+			<label for="first_name">Firstname</label>
+			<input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter Your first name">
+		</div>
+		<div class="form-group">
+			<label for="last_name">Lastname</label>
+			<input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter Your last name">
+		</div>
+		<div class="float-right">
+			<button type="submit" name="register" class="btn btn-primary">Register</button>
+		</div>
+		<p>Have an account? <a href="/login">Log in</a></p>
+		{% if validation_errors is defined %}
+			{% for validation_results in validation_errors %}
+				<div>{{ validation_results }}</div>
+			{% endfor %}
+		{% endif %}
+	</form>
+{% endblock %}

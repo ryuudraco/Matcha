@@ -1,0 +1,52 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">
+        {{ ENV_APP_NAME }}
+    </a>
+    <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarSupportedContent" data-toggle="collapse" type="button">
+        <span class="navbar-toggler-icon">
+        </span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/browse">
+                    Members
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/messages">
+                    Messages
+                </a>
+            </li>
+        </ul>
+
+        {% if USER_NAME is not empty %}
+            <div class="nav-item dropdown">
+                <a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="navbarDropdown" role="button">
+                    {{ USER_NAME }}
+                </a>
+                <div aria-labelledby="navbarDropdown" class="dropdown-menu">
+                    <a class="dropdown-item" href="/profile">
+                        Profile
+                    </a>
+                    <div class="dropdown-divider">
+                    </div>
+                    <a class="dropdown-item" href="/logout">
+                        Logout
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="nav-item">
+                <a class="nav-link" href="/login">
+                    Login
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="/register">
+                    Register
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</nav>

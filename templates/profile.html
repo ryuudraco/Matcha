@@ -1,0 +1,186 @@
+{% extends 'layouts/master.html' %}
+
+{% block body %}
+
+    {% if update_success is defined and update_success == 1 %}
+    <div>Profile has been updated!</div>
+    {% endif %}
+
+    {% if validation_errors is defined %}
+        {% for validation_results in validation_errors %}
+            {% for validation_result in validation_results %}
+                <div>{{ validation_result }}</div>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+
+        <!-- Profile Navigation Bar -->
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="true">Profile</a>
+            </li>
+            {% if user.id == USER_ID %}
+            <li class="nav-item">
+                <a class="nav-link" id="pills-edit-tab" data-toggle="pill" href="#pills-edit" role="tab" aria-controls="pills-edit" aria-selected="false">Edit</a>
+            </li>
+            {% endif %}
+        </ul>
+        
+        <!-- Profile view -->
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                <div class="container">
+                    <img src="/{{ user.avatar_image }}" class="" alt="Avatar">
+                    <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                            <div class="form-group">
+                                <label for="username">Username: {{ user.username }}'s profile</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="first_name">Name: {{ user.first_name }} {{ user.last_name }}</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="age">Age: {{ user.age }}</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="biography">Biography: {{ user.biography }}</label>
+                            </div>
+                            <div class="form-group">
+                                <span class="form-text">Gender:
+                                {% if user.gender_id == 0 %}
+                                    Female
+                                {% elseif user.gender_id == 1 %}
+                                    Male
+                                {% else %}
+                                    Other
+                                {% endif %}
+                                </span>
+                            </div>
+                            <div class="form-group">
+                                <label for="last_name">Sexual Preference: {{ user.preference }}</label>
+                            </div>
+                            {% if user.city != null %}
+                            <div class="form-group">
+                                <label for="city">City: {{ user.city }}</label>
+                            </div>
+                            {% endif %}
+                            {% if user.province != null %}
+                            <div class="form-group">
+                                <label for="province">Province: {{ user.province }}</label>  
+                            </div>
+                            {% endif %}
+                            {% if user.country != null %}
+                            <div class="form-group">
+                                <label for="country">Country: {{ user.country }}</label>     
+                            </div>
+                            {% endif %}
+                            {% if user.postal_code != null %}
+                            <div class="form-group">
+                                <label for="postal_code">Postal code: {{ user.postal_code }}</label>
+                            </div>
+                            {% endif %}
+                            <div class="form-group">
+                                <label for="likes">Likes: {{ user.likes }}</label>
+                            </div>
+                            {% if user.id != USER_ID %}
+                            <form method="post" id="form" action="/profile/{{user.username}}/like" >
+                                <div class="float-left">
+                                    <button type="submit" name="register" class="btn btn-primary">{% if liked == 1 %} Unlike {% elseif liked != 1 %} Like {% endif %}</button>
+                                </div>
+                            </form>
+                            {% endif %}
+                            <div class="float-right">
+                                <button type="submit" name="message" class="btn btn-primary">Message</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Profile tab -->
+        {% if user.id == USER_ID %}
+            <div class="tab-pane fade" id="pills-edit" role="tabpanel" aria-labelledby="pills-edit-tab">
+                <div class="container">
+                    <form method="post" id="form" action="/profile" enctype="multipart/form-data">
+                        <div class="form-row">
+                            <div class="col-md-4 mb-3">
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" class="form-control" id="username" name="username" aria-describedby="usernameHelp" placeholder="Enter Your Username" value="{{ user.username }}">
+                                    <small id="usernameHelp" class="form-text text-muted">This is your unique username shown to other members.</small>
+                                </div>
+                                <div class="form-group">
+                                   <span>If you would like to reset your password click <a href="/reset-password" target="_blank">here</a></span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter Your email" value="{{ user.email }}">
+                                    <small id="emailHelp" class="form-text text-muted">This is to keep you informed of updates and notifications.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="first_name">First name</label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter Your first name" value="{{ user.first_name }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="last_name">Last name</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter Your last name" value="{{ user.last_name }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="age">Age</label>
+                                    <input type="text" class="form-control" id="age" name="age" placeholder="Enter Your age" value="{{ user.age }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="biography">Biography</label>
+                                    <textarea type="text" class="form-control" id="biography" name="biography" placeholder="Enter Your biography">{{ user.biography }}</textarea>
+                                </div>
+                                <div class="form-group">
+                                    <span class="form-text">Select your gender</span>
+                                    <select class="form-control" id="gender_id" name="gender_id" placeholder="Select your gender">
+                                        <option value="0" {% if user.gender_id == 0 %} selected {% endif %}>Female</option>
+                                        <option value="1" {% if user.gender_id == 1 %} selected {% endif %}>Male</option>
+                                        <option value="2" {% if user.gender_id == 2 %} selected {% endif %}>Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="interests">Interests</label>
+                                    <input type="text" class="form-control" id="interests" name="interests" placeholder="Enter your interests" value="{{ user.interests }}">
+                                    <small id="interestsHelp" class="form-text text-muted">Please enter your interests and seperate your interests by a comma.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sexual_preference">Sexual Preference</label>
+                                    <input type="text" class="form-control" id="preference" name="preference" placeholder="Enter sexual preference" value="{{ user.preference }}">
+                                    <small id="preferenceHelp" class="form-text text-muted">Please enter either Both (if you're bisexual), Men (if you're interested in men) or Women (if you're interested in Women).</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="city">City</label>
+                                    <input type="text" class="form-control" id="city" name="city" placeholder="Enter Your city" value="{{ user.city }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="province">Province</label>
+                                    <input type="text" class="form-control" id="province" name="province" placeholder="Enter Your province" value="{{ user.province }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="country">Country</label>
+                                    <input type="text" class="form-control" id="country" name="country" placeholder="Enter Your country" value="{{ user.country }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="postal_code">Postal code</label>
+                                    <input type="text" class="form-control" id="postal_code" name="postal_code" placeholder="Enter Your postal code" value="{{ user.postal_code }}">
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroupFileAddon01">Upload Avatar</span>
+                                    </div>
+                                    <input type="file" class="form-control-file" id="avatar" name="avatar">
+                                </div>
+                                <div class="float-right">
+                                    <button type="submit" name="edit-profile" class="btn btn-primary">Confirm Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                <div>
+            </div>
+        {% endif %}
+{% endblock %}

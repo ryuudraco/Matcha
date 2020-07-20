@@ -1,0 +1,40 @@
+version: '2'
+
+volumes:
+    logs:
+        driver: local
+
+services:
+    app:
+        build:
+            context: ./
+            dockerfile: docker/app.dockerfile
+        working_dir: /var/www
+        container_name: dating_app
+        volumes:
+            - ./:/var/www
+
+    web:
+        build:
+            context: ./
+            dockerfile: docker/web.dockerfile
+        working_dir: /var/www
+        container_name: dating_web
+        volumes_from:
+          - app
+        ports:
+          - 8080:80
+
+    database:
+        image: mysql:5.7
+        container_name: dating_database
+        volumes:
+            - ./docker/mysql:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: "dating_app"
+            MYSQL_USER: "dating_app"
+            MYSQL_PASSWORD: "secret"
+            MYSQL_ROOT_PASSWORD: "supersecret"
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+        ports:
+            - "3306:3306"
