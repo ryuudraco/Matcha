@@ -4,8 +4,8 @@ namespace Src\DAO;
 use Src\Utils\DB;
 use Src\Beans\UserBean;
 use Src\Utils\Crypt;
-use Src\DAO\UserDAO;
 use Src\Beans\LikesBean;
+use Src\DAO\HistoryDAO;
 
 class LikesDAO extends DB {
 
@@ -16,7 +16,6 @@ class LikesDAO extends DB {
 
     public static function getAllTotals() {
         $count = parent::selectQuery("SELECT count(target_id) as total, target_id from likes group by target_id", LikesBean::class);
-        print_r($count);
         return $count;
     }
 
@@ -32,8 +31,21 @@ class LikesDAO extends DB {
         //guess we didn't liked that user yet
         if(empty($like)) {
             $sql = "INSERT INTO likes (origin_id, target_id) VALUES (:origin, :target)";
+            HistoryDAO::insertHistoryAction($target, $origin, 'liked');
+
+            $likeBack = self::getLike($origin, $target);
+            //we liked back someone who liked us before
+            if(!empty($likeBack)) {
+                //their profile
+                HistoryDAO::insertHistoryAction($target, $origin, 'matched');
+    
+                //our profile
+                HistoryDAO::insertHistoryAction($origin, $target, 'matched');
+            }
+            
         } else {
             $sql = "DELETE FROM likes WHERE origin_id = :origin AND target_id = :target";
+            HistoryDAO::deleteHistoryAction($target, $origin, 'liked');
         }
 
         $values = [

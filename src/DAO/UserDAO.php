@@ -5,6 +5,7 @@ use Src\Utils\DB;
 use Src\Beans\UserBean;
 use Src\Utils\Crypt;
 use Src\DAO\LikesDAO;
+use Src\DAO\BlocksDAO;
 
 class UserDAO extends DB {
 
@@ -50,6 +51,28 @@ class UserDAO extends DB {
                 parent::execute($query, $values);
                 return true;
             }
+        } catch (Exception $e) {
+            //TODO: set up logger and log the exceptions (file or db)
+            return false;
+        }
+    }
+
+    public static function updateOne(Array $data, UserBean $user) {
+        //PDO execute returns true or false, extra check for exception does not hurt
+        try {
+                $query = "UPDATE users SET";
+                $values = [];
+                foreach($data as $name => $value) {
+                    //this will concatinate string and will produce 
+                    //e.g. UPDATE users SET city = :city (:city is replaced by pdo on prepare statement)
+                    $query .= ' ' .$name . ' = :' . $name . ',';
+                    $values[':'.$name] = $value;
+                }
+                
+                $query = substr($query, 0, -1).' ';
+                $query .= "WHERE id = " . $user->getId() . ";";
+                parent::execute($query, $values);
+                return true;
         } catch (Exception $e) {
             //TODO: set up logger and log the exceptions (file or db)
             return false;

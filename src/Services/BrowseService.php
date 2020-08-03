@@ -7,6 +7,7 @@ use Slim\Http\Response;
 use Src\Utils\Validator;
 use Src\Utils\DB;
 use Src\DAO\UserDAO;
+use Src\DAO\BlocksDAO;
 
 class BrowseService extends Service 
 {
@@ -15,7 +16,26 @@ class BrowseService extends Service
 	 */
 	public function viewPage()
 	{
-		$users = UserDAO::getAll();
+
+		$origin = UserDAO::fetch([$_SESSION['user_id']], 'ID');
+		//get blocks
+		$blockedUsers = BlocksDAO::getAllBlockedUsersForOrigin($origin);
+
+		$allNotBlockedUsers = "";
+
+		foreach($blockedUsers as $blockedUser) {
+			$allNotBlockedUsers .= $blockedUser->getTarget_id() . ",";
+		}
+
+		$allNotBlockedUsers = rtrim($allNotBlockedUsers, ',');
+
+		//get all users (not blocked ones)
+		if(strlen($allNotBlockedUsers > 0)) {
+			$users = UserDAO::getAllWhere("id NOT IN(" . $allNotBlockedUsers . ")");
+		} else {
+			$users = UserDAO::getAll();
+		}
+
 		$params = [ 'users' => $users ];
 		return $this->render('browse.html', $params);
 	}

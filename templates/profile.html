@@ -23,12 +23,16 @@
             <li class="nav-item">
                 <a class="nav-link" id="pills-edit-tab" data-toggle="pill" href="#pills-edit" role="tab" aria-controls="pills-edit" aria-selected="false">Edit</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pills-history-tab" data-toggle="pill" href="#pills-history" role="tab" aria-controls="pills-history" aria-selected="false">History</a>
+            </li>
             {% endif %}
         </ul>
         
         <!-- Profile view -->
+        <!-- if user.block >= 5 add class text-danger below -->
         <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show active" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+            <div class="tab-pane fade in show active" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                 <div class="container">
                     <img src="/{{ user.avatar_image }}" class="" alt="Avatar">
                     <div class="form-row">
@@ -82,16 +86,24 @@
                             <div class="form-group">
                                 <label for="likes">Likes: {{ user.likes }}</label>
                             </div>
+                            <div class="form-group">
+                                <label for="fame_rating">Fame rating: {{ user.fame_rating }}</label>
+                            </div>
                             {% if user.id != USER_ID %}
                             <form method="post" id="form" action="/profile/{{user.username}}/like" >
                                 <div class="float-left">
                                     <button type="submit" name="register" class="btn btn-primary">{% if liked == 1 %} Unlike {% elseif liked != 1 %} Like {% endif %}</button>
                                 </div>
                             </form>
-                            {% endif %}
+                            <form method="post" id="form" action="/profile/{{user.username}}/block" >
+                                <div class="float-left">
+                                    <button type="submit" name="register" class="btn btn-primary">{% if blocked == 1 %} Unblock {% else %} Block {% endif %}</button>
+                                </div>
+                            </form>
                             <div class="float-right">
                                 <button type="submit" name="message" class="btn btn-primary">Message</button>
                             </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -182,5 +194,26 @@
                     </form>
                 <div>
             </div>
+
+            <div class="tab-pane fade" id="pills-history" role="tabpanel" aria-labelledby="pills-history-tab">
+                <div class="container mt-5 mb-5">
+                    <div class="row">
+                        <div class="col-md-6 offset-md-3">
+                            <h4>History</h4>
+                            <ul class="timeline">
+                                {% if history is defined and user.id == USER_ID %}
+                                    {% for result in history %}
+                                        <li>
+                                            <p class="float-right">{{ result.history.created_at }}</p>
+                                            <p>Your profile has been {{ result.history.action }}d by {{ result.user.username }}.</p>
+                                        </li>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         {% endif %}
 {% endblock %}

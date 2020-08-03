@@ -67,6 +67,10 @@ $app->post('/profile/{username}/like', function (Request $request, Response $res
 		$service = new \Src\Services\ProfileService($app->getContainer(), $request, $response, $params);
 		return $service->giveALikeOrUnlike();
 });
+$app->post('/profile/{username}/block', function (Request $request, Response $response, $params) use ($app) {
+	$service = new \Src\Services\ProfileService($app->getContainer(), $request, $response, $params);
+	return $service->giveABlockOrUnblock();
+});
 
 ########################### MILESTONE 3 ##########################################################
 
@@ -80,6 +84,15 @@ $app->post('/messages', function (Request $request, Response $response) use ($ap
 	$service = new \Src\Services\MessagesService($app->getContainer(), $request, $response);
 	return $service->test();
 });
+
+$app->get('/messages/thread/{id}', function (Request $request, Response $response, $params) use ($app) {
+	$service = new \Src\Services\MessagesService($app->getContainer(), $request, $response, $params);
+	return $service->viewMessages();
+});
+//$app->post('/profile/{username}/like', function (Request $request, Response $response, $params) use ($app) {
+		//$service = new \Src\Services\ProfileService($app->getContainer(), $request, $response, $params);
+		//return $service->giveALikeOrUnlike();
+//});
 
 $app->get('/messages/{username}', function (Request $request, Response $response, $params) {
 	echo '@todo - view my messages with another member';
@@ -118,6 +131,11 @@ $app->get('/request-password', function (Request $request, Response $response) u
 $app->post('/request-password', function (Request $request, Response $response) use($app) {
 	$service = new \Src\Services\ResetService($app->getContainer(), $request, $response);
 	return $service->handleRequestPost();
+});
+
+$app->get('/notifications', function(Request $request, Response $response) use($app) {
+	$service = new \Src\Services\NotificationService($app->getContainer(), $request, $response);
+	return $service->fetchNotifications();
 });
 
 //factory route

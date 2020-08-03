@@ -26,10 +26,59 @@
             $(function () {
               $('#myTab li:last-child a').tab('show')
             })
+
+            var getNotification = function() {
+                $.get( "/notifications", function( data ) {
+                    var records = JSON.parse(data);
+                    if(records.length != 0) {
+                        for(var i = 0; i <= records.length; i++) {
+                        console.log(records[i])
+                        $('<div class="alert alert-danger" role="alert"> Your profile has been ' + records[i].action + ' by <a href="/profile/' + records[i].name + '">' + records[i].name + '</a></div>').appendTo($('#notifications'));
+                        }
+                    }
+                //console.log(JSON.parse(data));
+                })
+            }
+            getNotification();
+            var interval = window.setInterval('getNotification()', 1000);
+        </script>
+
+        <script>
+            function sort(data) {
+                $('.card-deck').each(function () {
+                    $(this).html($(this).children('div').sort(function (a, b) {
+                        return ($(b).data(data)) > ($(a).data(data)) ? 1 : -1
+                    }))
+                })
+            }
+
+            function sortLocation() {
+                var ourCity = $('.ourProfile').data('city')
+                var ourProvince = $('.ourProfile').data('province')
+                var ourCountry = $('.ourProfile').data('country')
+
+                $('.card-deck').each(function () {
+                    $(this).html($(this).children('div').sort(function (a, b) {
+                        return ($(b).data('city')) == ourCity ? 1 : ($(b).data('province')) == ourProvince ? 1 : ($(b).data('country')) == ourCountry ? 1 : -1
+                    }))
+                })
+            }
+
+            function sortTags() {
+                var ourInterests = $('.ourProfile').data('interests').split(', ')
+
+                $('.card-deck').each(function () {
+                    $(this).html($(this).children('div').sort(function (a, b) {
+                        var interestsArray = $(b).data('interests').split(', ')
+                        var intersects = interestsArray.filter(element => ourInterests.includes(element));
+                        return (intersects.length) > 0 ? 1 : -1
+                    }))
+                })
+            }
         </script>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script> -->
 
 <script>
 
@@ -39,7 +88,7 @@
     //which is not a solution we want
 
     //this is just a test so the socket works (and appending messages somewhat work).
-
+/*
 var socket = io.connect('//127.0.0.1:1337');
 
 socket.on('connect', function () {
@@ -70,8 +119,9 @@ $("#chat").submit(function( event ) {
         $("#chatmsg").val('')
     });
 })
-
+*/
 </script>
 
     </body>
+
 </html>

@@ -19,19 +19,19 @@ class LikesBean {
 	}
 
 	public function getOrigin(): ?String {
-		return $this->username;
+		return $this->origin;
 	}
 
-	public function setOrigin(String $username){
-		$this->username = $username;
+	public function setOrigin(String $origin){
+		$this->origin = $origin;
 	}
 
 	public function getTarget(): ?String {
-		return $this->email;
+		return $this->target;
 	}
 
-	public function setTarget(String $email){
-		$this->email = $email;
+	public function setTarget(String $target){
+		$this->target = $target;
 	}
 	
 	public function getCreated_at(): ?String {

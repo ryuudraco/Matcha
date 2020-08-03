@@ -26,6 +26,8 @@ class UserBean {
     private $created_at;
 	private $updated_at;
 	private $likes;
+	private $blocks;
+	private $fame_rating;
 
     public function getId(): ?int {
 		return $this->id;
@@ -202,6 +204,21 @@ class UserBean {
 	public function getLikes(): ?int {
 		return $this->likes;
 	}
-    
+
+	public function setBlocks(int $blocks) {
+		$this->blocks = $blocks;
+	}
+
+	public function getBlocks(): ?int {
+		return $this->blocks;
+	}
+
+	public function setFame_rating(int $fame_rating){
+		$this->fame_rating = $fame_rating;
+	}
+
+	public function getFame_rating(): ?int {
+		return $this->fame_rating;
+	}
 
 }

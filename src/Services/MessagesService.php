@@ -7,6 +7,8 @@ use Slim\Http\Response;
 use Src\Utils\Validator;
 use ElephantIO\Client;
 use ElephantIO\Engine\SocketIO\Version2X;
+use Src\DAO\MessagesDAO;
+use Src\DAO\UserDAO;
 
 class MessagesService extends Service 
 {
@@ -16,9 +18,29 @@ class MessagesService extends Service
 	 */
 	public function viewPage()
 	{
-		return $this->render('message.html');
+
+		$usr = UserDAO::fetch([$_SESSION['user_id']], 'ID');
+		$threads = MessagesDAO::getThreadsWithUserBeans($usr);
+
+		$params = ['threads' => $threads];
+		return $this->render('message.html', $params);
 	}
 
+	public function viewMessages() {
+		if($this->request->getAttribute('id') !== null && !empty($this->request->getAttribute('id'))) {
+			$thread = $this->request->getAttribute('id');
+			$usr = UserDAO::fetch([$_SESSION['user_id']], 'ID');
+
+			$threads = MessagesDAO::getThreadsWithUserBeans($usr);
+			$messages = MessagesDAO::getMessagesForThread($usr, $thread);
+
+			$params = ['msgs' => $messages, 'threads' => $threads];
+
+			return $this->render('message.html', $params);
+		}
+	}
+
+	//just a test
 	public function test() {
 
 		$fields = $this->input([

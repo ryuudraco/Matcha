@@ -1,17 +1,24 @@
-<div class="mb-4">
-    <div class="card" style="width: 16rem;">
+<div class="mb-4 profileCard" data-age="{{ user.age }}" data-fame="{{ user.fame_rating }}" data-city="{{ user.city }}" data-province="{{ user.province }}" data-country="{{ user.country }}" data-interests="{{ user.interests }}">
+    <!-- if user.block >= 5 add class border-danger -->
+    <div class="card {% if user.blocked == 1 %} d-none {% endif %}" style="width: 16rem;">
       <img src="{{ user.avatar_image }}" class="card-img-top" alt="Avatar">
       <div class="card-body">
         <h5 class="card-title">{{ user.username }}</h5>
         <p class="card-text">{{ user.first_name }}</p>
         <ul class="card-subtitle mb-2 text-muted">{{ user.interests }}</ul>
         <p class="card">Likes: {{ user.likes }} </p>
+        <p class="card">Fame Rating: {{ user.fame_rating }} </p>
         <a href="/profile/{{ user.username }}" class="btn btn-primary">View Profile</a>
         {% if user.id != USER_ID %}
         <form method="post" id="form" action="/profile/{{user.username}}/like" >
             <div class="float-left">
-                <button type="submit" name="register" class="btn btn-primary">{% if liked == 1 %} Unlike {% elseif liked != 1 %} Like {% endif %}</button>
+                <button type="submit" name="like" class="btn btn-primary">{% if user.liked == 1 %} Unlike {% else %} Like {% endif %}</button>
             </div>
+        </form>
+        <form method="post" id="form" action="/profile/{{user.username}}/block" >
+          <div class="float-left">
+              <button type="submit" name="block" class="btn btn-primary">Block</button>
+          </div>
         </form>
         {% endif %}
     </div>

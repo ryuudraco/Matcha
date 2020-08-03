@@ -4,12 +4,9 @@ create table `messages` (
 	`origin_id` int unsigned not null, 
 	`target_id` int unsigned not null, 
 	`message` longtext not null, 
+	`thread_id` int unsigned not null,
+	`new` boolean not null default 1,
 
 	`created_at` timestamp null, 
-	`updated_at` timestamp null,
-
-	CONSTRAINT fk_origin_id 
-	foreign key(`origin_id`) references `users`(`id`) on delete cascade,
-	CONSTRAINT fk_target_id 
-	foreign key(`target_id`) references `users`(`id`) on delete cascade
+	`updated_at` timestamp null
 );

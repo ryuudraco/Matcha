@@ -6,8 +6,14 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Src\Utils\Validator;
 use Src\Utils\DB;
+use Src\Utils\Mail;
 use Src\DAO\UserDAO;
 use Src\DAO\LikesDAO;
+use Src\DAO\BlocksDAO;
+use Src\DAO\HistoryDAO;
+use Src\DAO\HistoryUserDAO;
+use Src\DAO\FameDAO;
+
 
 class ProfileService extends Service 
 {
@@ -19,11 +25,17 @@ class ProfileService extends Service
 		if($this->request->getAttribute('username') !== null && !empty($this->request->getAttribute('username'))) {
 			//we are actually viewing someone elses profile
 			$user = UserDAO::fetch([$this->request->getAttribute('username')], 'username');
+			$origin = UserDAO::fetch([$_SESSION['user_id']], 'ID');
+			if($user->getId() != $_SESSION['user_id']) {
+				HistoryDAO::insertHistoryAction($user, $origin, 'viewed');
+			}
 		} else {
 			$user = UserDAO::fetch([$_SESSION['user_id']], 'ID');
 		}
 		$likes = LikesDAO::countAllUserReceivedLikes($user);
 		$myLike = LikesDAO::getLike($user, UserDAO::fetch([$_SESSION['user_id']], 'ID'));
+		$blocks = BlocksDAO::countAllUserReceivedBlocks($user);
+		$myBlock = BlocksDAO::getBlock($user, UserDAO::fetch([$_SESSION['user_id']], 'ID'));
 
 		//to display on a button whether profile was already liked or not
 		$liked = false;
@@ -33,7 +45,15 @@ class ProfileService extends Service
 			$liked = true;
 		}
 
-		$params = ['user' => $user, 'count' => $likes, 'liked' => $liked ];
+		$blocked = false;
+		if(empty($myBlock)) {
+			$blocked = false;
+		} else {
+			$blocked = true;
+		}
+		
+		$history = HistoryUserDAO::getHistory($user);
+		$params = ['user' => $user, 'count' => $likes, 'liked' => $liked, 'history' => $history, 'countBlock' => $blocks, 'blocked' => $blocked ];
 		return $this->render('profile.html', $params);
 	}
 
@@ -63,7 +83,31 @@ class ProfileService extends Service
 		$origin = UserDAO::fetch([$_SESSION['user_id']], 'ID');
 
 		LikesDAO::likeUnlikeProfile($target, $origin);
+		FameDAO::addFame($target);
 
+		return $this->redirect('/profile/' . $target->getUsername());
+	}
+
+	public function giveABlockOrUnblock() {
+		$target = UserDAO::fetch([$this->request->getAttribute('username')], 'username');
+		$origin = UserDAO::fetch([$_SESSION['user_id']], 'ID');
+
+		BlocksDAO::blockUnblockProfile($target, $origin);
+		$blockCount = BlocksDAO::countAllUserReceivedBlocks($target);
+		FameDAO::removeFame($target);
+
+		if ($blockCount >= 5) {
+			Mail::send(
+				'Your profile has been reported',
+				[
+					'no-reply@dating-app.com' => 'Dating App - No Reply',
+				],
+				[
+					$target->getEmail() => $target->getFirst_name() . ' ' . $target->getLast_name(),
+				],
+				'Your profile has received too many blocks and has been reported, it will be investigated for fraudulent use.'
+			);
+		}
 		return $this->redirect('/profile/' . $target->getUsername());
 	}
 }
